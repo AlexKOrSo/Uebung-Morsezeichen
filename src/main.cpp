@@ -20,6 +20,8 @@ int main()
   MorseConfig=SetupMorse(LED);
   char S = 'S';
   char O = 'O';
+  
+  
   while(true)
   {
     Serial.println("HI");
