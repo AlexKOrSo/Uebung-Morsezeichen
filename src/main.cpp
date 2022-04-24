@@ -9,14 +9,14 @@ extern "C" {
     #include "morse.h"
 }
 
-#define LED PORTB5
+#define LED PORTB5 // Bitte hier im Define ändern, da an mehreren Stellen die Pinnummer  genutzt wird.
 Morse MorseConfig;
 
 int main(void){
 
   Serial.begin(9600); //Zur Nutzung fürs Debugging
 
-  DDRB |= (1 << DDB5); //Eingebaute LED an PIN 13 wird die Morse-Leuchte
+  DDRB |= (1 << LED); //Eingebaute LED an PIN 13 wird die Morse-Leuchte
 
   MorseConfig=SetupMorse(LED);
 
