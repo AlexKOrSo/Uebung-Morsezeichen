@@ -1,37 +1,65 @@
-#define F_CPU 16000000UL
+#include <avr/io.h>
 #include <Arduino.h>
-#include "avr/io.h"
 
-
+#ifndef F_CPU
+#define F_CPU 16000000UL
+#endif
 
 extern "C" {
     #include "morse.h"
 }
 
-#define LED PORTB0
+#define LED PORTB5
 Morse MorseConfig;
 
-int main()
-{ 
-  Serial.begin(9600);
+int main(void){
 
-  DDRB |= (1 << LED);
+  Serial.begin(9600); //Zur Nutzung fürs Debugging
+
+  DDRB |= (1 << DDB5); //Eingebaute LED an PIN 13 wird die Morse-Leuchte
 
   MorseConfig=SetupMorse(LED);
-  char S = 'S';
-  char O = 'O';
+
+  char string[] = "das ist setlsam"; //Das, was ausgegeben werden soll, hier ändern! Aber nur Kleinbuchstaben und Zahlen, keine Umlaute, kein ß.
+  int breakcounter = 0;
+
+  for(int i = 0; i < 100; i++){ //Maximal 1000 Zeichen ausgeben
+    
+    
+    Serial.println("Stelle:");
+    Serial.println(i); //Bestätigung dass Auswahlverfahren geglückt ist
+  
+
+    int stelle;
+
+    if (string[i] >= 97 && string[i] <= 122) {
+      stelle = string[i];
+    }/*
+    if (string[i] >= 90 && string[i] <= 65){
+      stelle = string[i];
+    }*/
+    else if (string[i] >= 48 && string[i] <= 57){
+      stelle = string[i];
+    }
+    else{
+      stelle = 0;
+      _delay_ms(200); //Pause zu nächstem Wort, blinken zur definitiven Anzeige
+      PORTB |= (1 << DDB5);
+      _delay_ms(1000);
+      PORTB &= ~(1 << DDB5);
+      breakcounter ++;
+      if (breakcounter >= 2){
+        break;
+      }
+    }
+
+
+    char letter = stelle;   
+    
+      MorseChar(&letter);
+      breakcounter = 0;
   
   
-  while(true)
-  {
-    Serial.println("HI");
-    MorseChar(&S);
-    MorseChar(&O);
-    MorseChar(&S);
+    //ACHTUNG: Breakcounter zurücksetzen!!!
   }
-}
-
-
-void setup(void){
-
 }
