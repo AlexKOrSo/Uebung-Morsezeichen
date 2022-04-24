@@ -16,7 +16,7 @@ int main(void){
 
   Serial.begin(9600); //Zur Nutzung fürs Debugging
 
-  DDRB |= (1 << LED); //Eingebaute LED an PIN 13 wird die Morse-Leuchte
+  DDRB |= (1 << LED); 
 
   MorseConfig=SetupMorse(LED);
 
