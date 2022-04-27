@@ -7,59 +7,39 @@
 
 extern "C" {
     #include "morse.h"
+    #include "uart.h"
 }
-
-#define LED PORTB5 // Bitte hier im Define ändern, da an mehreren Stellen die Pinnummer  genutzt wird.
+#define BAUD 9600
+#define LED PORTB5 
 Morse MorseConfig;
 
 int main(void){
 
-  Serial.begin(9600); //Zur Nutzung fürs Debugging
+
+  Uart_Init(BAUD);
+  uint8_t const text_length = 39;
+  uint8_t recievedChCts = 0;
+  char text[text_length+1]; 
 
   DDRB |= (1 << LED); 
-
   MorseConfig=SetupMorse(LED);
 
-  char string[] = "das ist setlsam"; //Das, was ausgegeben werden soll, hier ändern! Aber nur Kleinbuchstaben und Zahlen, keine Umlaute, kein ß.
-  int breakcounter = 0;
+  while (1)
+  {
+    recievedChCts = Uart_RecieveString(text,text_length);
 
-  for(int i = 0; i < 100; i++){ //Maximal 1000 Zeichen ausgeben
+    for (uint8_t i = 0; i < recievedChCts; i++)
+    {
+      MorseChar(text+i);
+    }
     
-    
-    Serial.println("Stelle:");
-    Serial.println(i); //Bestätigung dass Auswahlverfahren geglückt ist
+  }
   
 
-    int stelle;
-
-    if (string[i] >= 97 && string[i] <= 122) {
-      stelle = string[i];
-    }/*
-    if (string[i] >= 90 && string[i] <= 65){
-      stelle = string[i];
-    }*/
-    else if (string[i] >= 48 && string[i] <= 57){
-      stelle = string[i];
-    }
-    else{
-      stelle = 0;
-      _delay_ms(200); //Pause zu nächstem Wort, blinken zur definitiven Anzeige
-      PORTB |= (1 << DDB5);
-      _delay_ms(1000);
-      PORTB &= ~(1 << DDB5);
-      breakcounter ++;
-      if (breakcounter >= 2){
-        break;
-      }
-    }
 
 
-    char letter = stelle;   
-    
-      MorseChar(&letter);
-      breakcounter = 0;
   
   
     //ACHTUNG: Breakcounter zurücksetzen!!!
-  }
+  
 }
